@@ -4,11 +4,18 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       node: 20
+      groups:
+        - Lakeside
     scripts:
       - npm install
       - npx cap sync android
+      - cd android && ./gradlew assembleRelease
     artifacts:
-      - android/app/build/outputs/**/*.apk
+      - android/app/build/outputs/apk/release/*.apk
+    publishing:
+      email:
+        recipients:
+          - pieroquadri@gmail.com
 
   ios-workflow:
     name: iOS Build

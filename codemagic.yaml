@@ -4,6 +4,7 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       node: 22
+      java: 21
       groups:
         - Lakeside
     scripts:

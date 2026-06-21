@@ -3,7 +3,7 @@ workflows:
     name: Android Build
     instance_type: mac_mini_m2
     environment:
-      node: 20
+      node: 22
       groups:
         - Lakeside
     scripts:
@@ -21,7 +21,7 @@ workflows:
     name: iOS Build
     instance_type: mac_mini_m2
     environment:
-      node: 20
+      node: 22
       xcode: latest
     scripts:
       - npm install

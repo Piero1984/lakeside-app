@@ -1,0 +1,9 @@
+{
+  "appId": "it.lakesidesmash.app",
+  "appName": "Lakeside Smash",
+  "webDir": "www",
+  "server": {
+    "url": "https://app.lakesidesmash.it",
+    "cleartext": false
+  }
+}

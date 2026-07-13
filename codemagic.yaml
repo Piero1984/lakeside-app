@@ -11,13 +11,13 @@ workflows:
       - npm install
       - npx cap sync android
       - |
-        cd android
-        echo $CM_KEYSTORE | base64 --decode > lakeside-smash.keystore
-        ./gradlew assembleRelease \
-          -Pandroid.injected.signing.store.file=$(pwd)/lakeside-smash.keystore \
-          -Pandroid.injected.signing.store.password=$CM_KEYSTORE_PASSWORD \
-          -Pandroid.injected.signing.key.alias=$CM_KEY_ALIAS \
-          -Pandroid.injected.signing.key.password=$CM_KEY_PASSWORD
+          cd android
+          echo $CM_KEYSTORE | base64 --decode > lakeside-smash.keystore
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=$(pwd)/lakeside-smash.keystore \
+            -Pandroid.injected.signing.store.password=$CM_KEYSTORE_PASSWORD \
+            -Pandroid.injected.signing.key.alias=$CM_KEY_ALIAS \
+            -Pandroid.injected.signing.key.password=$CM_KEY_PASSWORD
     artifacts:
       - android/app/build/outputs/apk/release/*.apk
     publishing:
@@ -28,12 +28,33 @@ workflows:
   ios-workflow:
     name: iOS Build
     instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: Codemagic CI Lakeside
     environment:
       node: 22
       xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: it.lakesidesmash.app
     scripts:
-      - npm install
-      - npx cap sync ios
-      - cd ios/App && pod install
+      - name: Install npm dependencies
+        script: npm install
+      - name: Sync Capacitor iOS
+        script: npx cap sync ios
+      - name: Install CocoaPods dependencies
+        script: cd ios/App && pod install
+      - name: Set up code signing settings on Xcode project
+        script: xcode-project use-profiles
+      - name: Build ipa for distribution
+        script: |
+          xcode-project build-ipa \
+            --workspace "ios/App/App.xcworkspace" \
+            --scheme "App"
     artifacts:
-      - ios/App/build/**/*.ipa
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
